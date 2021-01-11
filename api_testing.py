@@ -1,3 +1,5 @@
+# This is a file just to test whether we can log in on Twitter properly. 
+
 import tweepy
 
 # Save a file containing the Key, Secret Key, and Token for Twitter access. Contains these variables and nothing else.
