@@ -1,7 +1,7 @@
 # Import twitter, import relevant authentication codes from password file
 import tweepy
 from passwords import key, secret_key, token, secret_token
-import pandas
+import pandas as pd
 
 #Authenticate to Twitter
 auth = tweepy.OAuthHandler(key, secret_key)
@@ -10,39 +10,48 @@ auth.set_access_token(token, secret_token)
 # Create API object
 api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
-# Create lists of initial friends + followers
-initial_followers = []
-initial_friends = []
-for follower in tweepy.Cursor(api.followers).items():
-    initial_followers.append(follower.screen_name)
+# Import lists of initial friends and followers
+initial_followers = pd.read_csv('initial_followers.csv')
+initial_friends = pd.read_csv('initial_friends.csv')
 
-blacklist = ['condurkin', 'shopify','johnnyphonecall', 'pontifex', 'mgdurkin', 'pcallahan91']
+initial_followers.columns = ['name']
+initial_friends.columns = ['name']
 
-# add some logic skipping an account if follower/followed count is > 100k 
-
-
+initial_followers = list(initial_followers['name'])
+initial_friends = list(initial_friends['name'])
 
 
+##### Creating initial target set.
 
-for friend in tweepy.Cursor(api.friends).items():
-    initial_friends.append(friend.screen_name)
-
-# Create lists of 'priority keywords'
+# First create lists of 'priority keywords' in Twitter bios/descriptions to classify potential targets.
 bio_top = ['chaplain', 'fr.', 'pastor', 'seminarian', 'priest', 'vicar', 'diocese']
-bio_mid = ['friar', 'brother', 'catholic', 'jesuit', 'dominican', 'franciscan', 'parish']
+bio_mid = ['friar', 'catholic', 'jesuit', 'dominican', 'franciscan', 'parish']
 
-targets = []
-# Create list of all followers of followers:
-for follower in tweepy.Cursor(api.followers).items():
-    for grand_follower in tweepy.Cursor(follower.followers).items():
-        targets.append(grand_follower)
+
+# Read in information on our targets - this is a big list! We're going to pull bio information to classify them.
+initial_targets = pd.read_csv('initial_targets.csv')
+
+top_targets = []
+mid_targets = []
+low_targets = []
+
+for account in initial_targets:
+    if any(word in account.description.lower() for word in bio_top):             # !!! Note: Need to get the syntax right to pull the account descriptions here...
+        top_targets.append(account)
+    elif any(word in account.description.lower() for word in bio_mid):
+        mid_targets.append(account)
+    else:
+        low_targets.append(account)
+
+
+
+
 
 
 
 # THINGS TO DO:
 #DONE   1. Store my 'base' list of followers and followed accounts.
 
-                # 2. Generate a list of the people I'd like to try following.
                 #     - Ideas: Suggested accounts, followers of followers, followers of followed, followed of followed, followed of followers, specific hashtags, specific bios?
                 # 3. Record list of those people.
                 # 4. Follow top 50 in a day
