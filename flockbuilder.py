@@ -43,23 +43,31 @@ for account in initial_targets:
     else:
         low_targets.append(account)
 
+# Create a list of people we have already followed. Do I need to flag the initial guys somehow? Probably.
+already_followed = initial_followers.copy()
 
 
 
 
 
 
-# THINGS TO DO:
-#DONE   1. Store my 'base' list of followers and followed accounts.
 
-                #     - Ideas: Suggested accounts, followers of followers, followers of followed, followed of followed, followed of followers, specific hashtags, specific bios?
-                # 3. Record list of those people.
-                # 4. Follow top 50 in a day
-                # 5. Store the 50 new follows along with the date.
-                # 6. Sleep for a day.
-                # 7. Follow another 50, store in list, sleep.
-                # 8. After [N] days, check list of followers for guys from step 5.
-                #     If no -> unfollow. Log as unsuccessful.
-                #     If yes -> stay following.
-                # 9. Logic for who to follow should now check against the unsuccessful list too - don't wanna refollow anytime soon.
-#
+What we want to do:
+1. Pull the top 100 'top targets' available.
+    See if they are in the already followed list.
+        if so, delete them and skip.
+        if not, follow them. Add their names to the already_followed list (along with date, screenname, user info, target list it came from).
+        if we can't follow them, throw them on an 'error' list of some kind.
+        Add them to a 'today' list as well
+
+2. Check our 'already followed' list for any names that are at least 14 days old.
+        Check to see if they are our friend.
+            If so, log them as a 'followed back!' somewhere.
+            If not -> unfollow them.
+
+3. Pull all the IDs for the 'today' list friends + followers. Make sure we don't have too many names! Skip if over 100k.
+    Whittle this down to only things we haven't included in any target list or previous follows.
+    Pull all bios for whatever's left. Sort them into the appropriate target lists and append them onto the end.
+    Reset the 'today' list to a blank list.
+
+4. Sleep until tomorrow morning.
