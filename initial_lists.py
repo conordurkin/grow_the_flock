@@ -66,7 +66,7 @@ for name in initial_followers:
         print("Skipping user " + name + " altogether")
         pass
     with open('target_ids.pickle', 'wb') as f:
-        pickle.dump(target_ds, f)
+        pickle.dump(target_ids, f)
 
 # Now, let's do it again with initial friends....
 
@@ -111,7 +111,7 @@ for name in initial_friends:
         print("Skipping user " + name + " altogether")
         pass
     with open('target_ids.pickle', 'wb') as f:
-        pickle.dump(target_ds, f)
+        pickle.dump(target_ids, f)
 
 
 # Great, now remove any duplicates, and save this deduped list down...
