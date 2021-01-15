@@ -28,8 +28,9 @@ bio_top = ['chaplain', 'fr.', 'pastor', 'seminarian', 'priest', 'vicar', 'dioces
 bio_mid = ['friar', 'catholic', 'jesuit', 'dominican', 'franciscan', 'parish']
 
 
-# Read in information on our targets - this is a big list! We're going to pull bio information to classify them.
-initial_targets = pd.read_csv('initial_targets.csv')
+# Read in information on our targets - this is a big dataset! We're going to pull bio information to classify them.
+with open('unique_targets_ids_info.pickle', 'rb') as f:
+    initial_targets = pickle.load(f)
 
 top_targets = []
 mid_targets = []
@@ -45,6 +46,10 @@ for account in initial_targets:
 
 # Create a list of people we have already followed. Do I need to flag the initial guys somehow? Probably.
 already_followed = initial_followers.copy()
+
+
+
+
 
 
 
