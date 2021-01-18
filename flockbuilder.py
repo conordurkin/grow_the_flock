@@ -11,7 +11,6 @@ from datetime import datetime as dt
 from datetime import timedelta
 today = dt.today().strftime("%Y-%m-%d")
 
-print("starting the process at " + str((dt.now())))
 #Authenticate to Twitter and get API connected
 auth = tweepy.OAuthHandler(key, secret_key)
 auth.set_access_token(token, secret_token)
@@ -53,12 +52,10 @@ for target in today_targets:
     try:
         api.create_friendship(target[0])
         new_row = pd.Series(target, index=followed_log.columns)
-        follower_log.append(new_row)
+        followed_log = followed_log.append(new_row, ignore_index = True)
 
     except:
         pass
-
-print("Done with Section 2 (getting targets) at " + str((dt.now())))
 
 ### Third Section: Replenishing our Target Lists by pulling followers/friends from Today's Targets ###
 
@@ -95,7 +92,7 @@ for target in today_targets:
 
 # Filter down that list of new target IDs. Eliminate anyone we already have seen.
 new_targets = list(set(new_targets))
-old_targets = [target[0] for target in low_targets] + [target[0] for target in mid_targets] + [target[0] for target in top_targets]
+old_targets = [target for target in low_targets] + [target[0] for target in mid_targets] + [target[0] for target in top_targets]
 brand_new_targets = [target for targets in new_targets if target not in old_targets]
 
 # Keywords to classify accounts into one of the good lists.
@@ -125,7 +122,7 @@ for account in new_target_info:
     elif any(word in account.description.lower() for word in bio_mid):
         mid_targets.append(account)
     else:
-        low_targets.append(account)
+        low_targets.append(account[0]) #For low targets, only append the ID. Saves a ton of memory.
 
 # And store these target lists down as pickle files.
 with open('top_targets.pickle', 'wb') as f:
@@ -135,7 +132,6 @@ with open('mid_targets.pickle', 'wb') as f:
 with open('low_targets.pickle', 'wb') as f:
     pickle.dump(low_targets, f)
 
-print("Done with Section 3 (replenishing) at " + str((dt.now())))
 
 ### Fourth Section: Unfollowing Accounts if they never follow us back ###
 
@@ -143,13 +139,11 @@ print("Done with Section 3 (replenishing) at " + str((dt.now())))
 lookback = (dt.today() - timedelta(14)).strftime("%Y-%m-%d")
 unfollow_candidates = followed_log.loc[followed_log.date == lookback]
 unfollow_list = list(unfollow_candidates["id"])
-print("got the list of potential unfollows")
 
 # Generate a list of all of our followers
 follower_list = []
 for follower in tweepy.Cursor(api.followers).items():
     follower_list.append(follower.id)
-print("got the list of our followers")
 
 # Check if every ID follows us. If yes, flag. If no, flag + unfollow them.
 for id in unfollow_list:
@@ -158,8 +152,5 @@ for id in unfollow_list:
     else:
         followed_log.loc[followed_log.id == id, 'flag'] = 0
         api.destroy_friendship(id)
-print("unfollowed the right ones")
 
 followed_log.to_csv('followed_log.csv', index = False)
-
-print("All done! At " + str((dt.now())))
