@@ -6,10 +6,12 @@
 import tweepy
 from passwords import key, secret_key, token, secret_token
 import pandas as pd
+import pickle
 from datetime import datetime as dt
+from datetime import timedelta
 today = dt.today().strftime("%Y-%m-%d")
 
-
+print("starting the process at " + str((dt.now())))
 #Authenticate to Twitter and get API connected
 auth = tweepy.OAuthHandler(key, secret_key)
 auth.set_access_token(token, secret_token)
@@ -56,6 +58,7 @@ for target in today_targets:
     except:
         pass
 
+print("Done with Section 2 (getting targets) at " + str((dt.now())))
 
 ### Third Section: Replenishing our Target Lists by pulling followers/friends from Today's Targets ###
 
@@ -96,7 +99,7 @@ old_targets = [target[0] for target in low_targets] + [target[0] for target in m
 brand_new_targets = [target for targets in new_targets if target not in old_targets]
 
 # Keywords to classify accounts into one of the good lists.
-bio_top = ['chaplain', 'fr.', 'pastor', 'seminarian', 'priest', 'vicar', 'diocese']
+bio_top = ['chaplain', 'fr.', 'pastor', 'seminarian', 'priest', 'vicar', 'diocese', 'deacon']
 bio_mid = ['friar', 'catholic', 'jesuit', 'dominican', 'franciscan', 'parish']
 
 # Pull bios for anyone on the brand_new_targets lists.
@@ -132,6 +135,7 @@ with open('mid_targets.pickle', 'wb') as f:
 with open('low_targets.pickle', 'wb') as f:
     pickle.dump(low_targets, f)
 
+print("Done with Section 3 (replenishing) at " + str((dt.now())))
 
 ### Fourth Section: Unfollowing Accounts if they never follow us back ###
 
@@ -139,11 +143,13 @@ with open('low_targets.pickle', 'wb') as f:
 lookback = (dt.today() - timedelta(14)).strftime("%Y-%m-%d")
 unfollow_candidates = followed_log.loc[followed_log.date == lookback]
 unfollow_list = list(unfollow_candidates["id"])
+print("got the list of potential unfollows")
 
 # Generate a list of all of our followers
 follower_list = []
 for follower in tweepy.Cursor(api.followers).items():
     follower_list.append(follower.id)
+print("got the list of our followers")
 
 # Check if every ID follows us. If yes, flag. If no, flag + unfollow them.
 for id in unfollow_list:
@@ -152,5 +158,8 @@ for id in unfollow_list:
     else:
         followed_log.loc[followed_log.id == id, 'flag'] = 0
         api.destroy_friendship(id)
+print("unfollowed the right ones")
 
 followed_log.to_csv('followed_log.csv', index = False)
+
+print("All done! At " + str((dt.now())))
