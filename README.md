@@ -1,6 +1,6 @@
 # grow_the_flock
 
-This repo contains the code to build a run a Twitter bot.
+This repo contains the code to build and run a Twitter bot.
 The twitter bot is intended to help my e-commerce website by following potential customers (getting their attention).
 My intended use is to simply schedule this to run as a cron job every morning, but one could find other ways to deploy.
 
