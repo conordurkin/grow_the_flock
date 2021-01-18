@@ -42,9 +42,17 @@ mid_targets = []
 low_targets = []
 
 for account in initial_targets:
-    if any(word in account.description.lower() for word in bio_top):             # !!! Note: Need to get the syntax right to pull the account descriptions here...
+    if any(word in account.description.lower() for word in bio_top):
         top_targets.append(account)
     elif any(word in account.description.lower() for word in bio_mid):
         mid_targets.append(account)
     else:
         low_targets.append(account)
+
+# Now that I've got the lists, dump them into pickle files. We'll use these in our ongoing loop.
+with open('top_targets.pickle', 'wb') as f:
+    pickle.dump(top_targets, f)
+with open('mid_targets.pickle', 'wb') as f:
+    pickle.dump(mid_targets, f)
+with open('low_targets.pickle', 'wb') as f:
+    pickle.dump(low_targets, f)
