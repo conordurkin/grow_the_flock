@@ -135,19 +135,21 @@ with open('low_targets.pickle', 'wb') as f:
 
 
 ### Fourth Section: Unfollowing Accounts if they never follow us back ###
+
+# Generate the list of IDs I need to look for.
 lookback = (dt.today() - timedelta(14)).strftime("%Y-%m-%d")
-
 unfollow_candidates = followed_log.loc[followed_log.date == lookback]
+unfollow_list = list(unfollow_candidates["id"])
 
+# Generate a list of all of our followers
 follower_list = []
 for follower in tweepy.Cursor(api.followers).items():
     follower_list.append(follower.id)
 
-
-
-########################################################
-Still to do:
-
-        Check to see if they are our friend.
-            If so, log them as a 'followed back!' somewhere.
-            If not -> unfollow them.
+# Check if every ID follows us. If yes, flag. If no, flag + unfollow them.
+for id in unfollow_list:
+    if id in follower_list:
+        followed_log.loc[followed_log.id == id, 'flag'] = 1
+    else:
+        followed_log.loc[followed_log.id == id, 'flag'] = 0
+        api.destroy_friendship(id)
