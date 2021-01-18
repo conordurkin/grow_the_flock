@@ -1,6 +1,5 @@
 # This is going to be the file that runs daily and logs lots of info for me.
 
-
 ### First Section: Basic Setup ###
 
 # Import twitter, import relevant authentication codes from password file
@@ -153,3 +152,5 @@ for id in unfollow_list:
     else:
         followed_log.loc[followed_log.id == id, 'flag'] = 0
         api.destroy_friendship(id)
+
+followed_log.to_csv('followed_log.csv', index = False)
