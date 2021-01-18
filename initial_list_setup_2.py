@@ -34,7 +34,7 @@ for account in initial_targets:
     elif any(word in account.description.lower() for word in bio_mid):
         mid_targets.append(account)
     else:
-        low_targets.append(account)
+        low_targets.append(account.id)
 
 # Now that I've got the lists, dump them into pickle files. We'll use these in our ongoing loop.
 with open('top_targets.pickle', 'wb') as f:
