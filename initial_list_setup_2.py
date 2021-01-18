@@ -15,19 +15,6 @@ auth.set_access_token(token, secret_token)
 # Create API object
 api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
-# Import lists of initial friends and followers
-initial_followers = pd.read_csv('initial_followers.csv')
-initial_friends = pd.read_csv('initial_friends.csv')
-
-initial_followers.columns = ['name']
-initial_friends.columns = ['name']
-
-initial_followers = list(initial_followers['name'])
-initial_friends = list(initial_friends['name'])
-
-
-##### Creating initial target set.
-
 # First create lists of 'priority keywords' in Twitter bios/descriptions to classify potential targets.
 bio_top = ['chaplain', 'fr.', 'pastor', 'seminarian', 'priest', 'vicar', 'diocese']
 bio_mid = ['friar', 'catholic', 'jesuit', 'dominican', 'franciscan', 'parish']
