@@ -1,4 +1,4 @@
-# This is a file just to test whether we can log in on Twitter properly. 
+# This is a file just to test whether we can log in on Twitter properly.
 
 import tweepy
 
